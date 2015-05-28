@@ -220,23 +220,6 @@ static BOOL GetAdTrackingEnabled() {
   seg_dispatch_specific_sync(_serialQueue, block);
 }
 
-- (void)beginBackgroundTask {
-  [self endBackgroundTask];
-  
-  self.flushTaskID = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-    [self endBackgroundTask];
-  }];
-}
-
-- (void)endBackgroundTask {
-  [self dispatchBackgroundAndWait:^{
-    if (self.flushTaskID != UIBackgroundTaskInvalid) {
-      [[UIApplication sharedApplication] endBackgroundTask:self.flushTaskID];
-      self.flushTaskID = UIBackgroundTaskInvalid;
-    }
-  }];
-}
-
 - (void)validate {
   self.valid = ![[self.settings objectForKey:@"off"] boolValue];
 }
@@ -462,14 +445,12 @@ static BOOL GetAdTrackingEnabled() {
       
       self.batch = nil;
       self.request = nil;
-      [self endBackgroundTask];
     }];
   }];
   [self notifyForName:SEGSegmentioDidSendRequestNotification userInfo:self.batch];
 }
 
 - (void)applicationDidEnterBackground {
-  [self beginBackgroundTask];
   // We are gonna try to flush as much as we reasonably can when we enter background
   // since there is a chance that the user will never launch the app again.
   [self flush];
