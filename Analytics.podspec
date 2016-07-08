@@ -5,43 +5,22 @@ rescue LoadError
 end
 
 Pod::Spec.new do |s|
-  s.name            = "Analytics"
-  s.version         = "1.11.3"
-  s.summary         = "Segment analytics and marketing tools library for iOS."
-  s.homepage        = "https://segment.com/libraries/ios"
-  s.license         = { :type => "MIT", :file => "License.md" }
-  s.author          = { "Segment" => "friends@segment.io" }
+  s.name             = "Analytics"
+  s.version          = "3.2.5"
+  s.summary          = "The hassle-free way to add analytics to your iOS app."
 
-  s.source          = { :git => "https://github.com/segmentio/analytics-ios.git", :tag => s.version.to_s }
-  s.ios.deployment_target = '6.0'
-  s.requires_arc    = true
+  s.description      = <<-DESC
+                       Analytics for iOS provides a single API that lets you
+                       integrate with over 100s of tools.
+                       DESC
 
-  s.subspec 'Core-iOS' do |ss|
-    ss.public_header_files = 'Analytics/*.h'
-    ss.source_files = ['Analytics/*.{h,m}', 'Analytics/Helpers/*.{h,m}', 'Analytics/Integrations/SEGAnalyticsIntegrations.h']
-    ss.platforms = [:ios]
-    ss.weak_frameworks = ['CoreBluetooth', 'SystemConfiguration', 'CoreLocation']
-    ss.dependency 'TRVSDictionaryWithCaseInsensitivity', '0.0.2'
-    s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => "ANALYTICS_VERSION=#{s.version}" }
-  end
+  s.homepage         = "http://segment.com/"
+  s.license          =  { :type => 'MIT' }
+  s.author           = { "Segment" => "friends@segment.com" }
+  s.source           = { :git => "https://github.com/segmentio/analytics-ios.git", :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/segment'
 
-  Build.subspecs.each do |a|
-    s.subspec a.name do |ss|
-      ss.prefix_header_contents = "#define USE_ANALYTICS_#{a.name.upcase} 1"
-      ss.public_header_files = 'Analytics/Integrations/*.h'
-      ss.ios.source_files = "Analytics/Integrations/#{a.name}/SEG#{a.name}Integration.{h,m}"
-      ss.platforms = [:ios]
+  s.ios.deployment_target = '7.0'
 
-      ss.dependency 'Analytics/Core-iOS'
-      ss.dependency 'Analytics/Segmentio' unless a.is_segment?
-
-      (a.dependencies || []).each do |d|
-        if d.version
-          ss.dependency d.name, d.version
-        else
-          ss.dependency d.name
-        end
-      end
-    end
-  end
+  s.source_files = 'Analytics/Classes/**/*'
 end
